@@ -1,0 +1,547 @@
+
+TWISlave.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000002d8  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000034  00800060  000002d8  0000034c  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  00000380  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000003b0  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 000000a0  00000000  00000000  000003ec  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   00000ae7  00000000  00000000  0000048c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000007ee  00000000  00000000  00000f73  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   000005e1  00000000  00000000  00001761  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000150  00000000  00000000  00001d44  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000403  00000000  00000000  00001e94  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_loc    000003a1  00000000  00000000  00002297  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 00000070  00000000  00000000  00002638  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+   8:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+   c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  10:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  14:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  18:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  1c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  20:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  24:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  28:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  2c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  30:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  34:	0c 94 10 01 	jmp	0x220	; 0x220 <__vector_13>
+  38:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  3c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  40:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  44:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  48:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  4c:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+  50:	0c 94 3f 00 	jmp	0x7e	; 0x7e <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+
+00000060 <__do_copy_data>:
+  60:	10 e0       	ldi	r17, 0x00	; 0
+  62:	a0 e6       	ldi	r26, 0x60	; 96
+  64:	b0 e0       	ldi	r27, 0x00	; 0
+  66:	e8 ed       	ldi	r30, 0xD8	; 216
+  68:	f2 e0       	ldi	r31, 0x02	; 2
+  6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
+  6c:	05 90       	lpm	r0, Z+
+  6e:	0d 92       	st	X+, r0
+  70:	a4 39       	cpi	r26, 0x94	; 148
+  72:	b1 07       	cpc	r27, r17
+  74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
+  76:	0e 94 9e 00 	call	0x13c	; 0x13c <main>
+  7a:	0c 94 6a 01 	jmp	0x2d4	; 0x2d4 <_exit>
+
+0000007e <__bad_interrupt>:
+  7e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000082 <I2C_Slave_Init>:
+
+#include "I2C_Slave_H_File.h"
+
+void I2C_Slave_Init(uint8_t slave_address)
+{
+	TWAR = slave_address;						/* Assign address in TWI address register */
+  82:	82 b9       	out	0x02, r24	; 2
+	TWCR = (1<<TWEN) | (1<<TWEA) | (1<<TWINT);	/* Enable TWI, Enable ack generation, clear TWI interrupt */
+  84:	84 ec       	ldi	r24, 0xC4	; 196
+  86:	86 bf       	out	0x36, r24	; 54
+  88:	08 95       	ret
+
+0000008a <I2C_Slave_Listen>:
+int8_t I2C_Slave_Listen()
+{
+	while(1)
+	{
+		uint8_t status;							/* Declare variable */
+		while (!(TWCR & (1<<TWINT)));			/* Wait to be addressed */
+  8a:	06 b6       	in	r0, 0x36	; 54
+  8c:	07 fe       	sbrs	r0, 7
+  8e:	fd cf       	rjmp	.-6      	; 0x8a <I2C_Slave_Listen>
+		status = TWSR & 0xF8;					/* Read TWI status register with masking lower three bits */
+  90:	81 b1       	in	r24, 0x01	; 1
+  92:	88 7f       	andi	r24, 0xF8	; 248
+		if (status == 0x60 || status == 0x68)	/* Check weather own SLA+W received & ack returned (TWEA = 1) */
+  94:	80 36       	cpi	r24, 0x60	; 96
+  96:	61 f0       	breq	.+24     	; 0xb0 <I2C_Slave_Listen+0x26>
+  98:	88 36       	cpi	r24, 0x68	; 104
+  9a:	61 f0       	breq	.+24     	; 0xb4 <I2C_Slave_Listen+0x2a>
+		return 0;								/* If yes then return 0 to indicate ack returned */
+		if (status == 0xA8 || status == 0xB0)	/* Check weather own SLA+R received & ack returned (TWEA = 1) */
+  9c:	88 3a       	cpi	r24, 0xA8	; 168
+  9e:	61 f0       	breq	.+24     	; 0xb8 <I2C_Slave_Listen+0x2e>
+  a0:	80 3b       	cpi	r24, 0xB0	; 176
+  a2:	61 f0       	breq	.+24     	; 0xbc <I2C_Slave_Listen+0x32>
+		return 1;								/* If yes then return 1 to indicate ack returned */
+		if (status == 0x70 || status == 0x78)	/* Check weather general call received & ack returned (TWEA = 1) */
+  a4:	80 37       	cpi	r24, 0x70	; 112
+  a6:	61 f0       	breq	.+24     	; 0xc0 <I2C_Slave_Listen+0x36>
+  a8:	88 37       	cpi	r24, 0x78	; 120
+  aa:	79 f7       	brne	.-34     	; 0x8a <I2C_Slave_Listen>
+		return 2;								/* If yes then return 2 to indicate ack returned */
+  ac:	82 e0       	ldi	r24, 0x02	; 2
+  ae:	08 95       	ret
+	{
+		uint8_t status;							/* Declare variable */
+		while (!(TWCR & (1<<TWINT)));			/* Wait to be addressed */
+		status = TWSR & 0xF8;					/* Read TWI status register with masking lower three bits */
+		if (status == 0x60 || status == 0x68)	/* Check weather own SLA+W received & ack returned (TWEA = 1) */
+		return 0;								/* If yes then return 0 to indicate ack returned */
+  b0:	80 e0       	ldi	r24, 0x00	; 0
+  b2:	08 95       	ret
+  b4:	80 e0       	ldi	r24, 0x00	; 0
+  b6:	08 95       	ret
+		if (status == 0xA8 || status == 0xB0)	/* Check weather own SLA+R received & ack returned (TWEA = 1) */
+		return 1;								/* If yes then return 1 to indicate ack returned */
+  b8:	81 e0       	ldi	r24, 0x01	; 1
+  ba:	08 95       	ret
+  bc:	81 e0       	ldi	r24, 0x01	; 1
+  be:	08 95       	ret
+		if (status == 0x70 || status == 0x78)	/* Check weather general call received & ack returned (TWEA = 1) */
+		return 2;								/* If yes then return 2 to indicate ack returned */
+  c0:	82 e0       	ldi	r24, 0x02	; 2
+		else
+		continue;								/* Else continue */
+	}
+}
+  c2:	08 95       	ret
+
+000000c4 <I2C_Slave_Transmit>:
+
+int8_t I2C_Slave_Transmit(char data)
+{
+	uint8_t status;
+	TWDR = data;								/* Write data to TWDR to be transmitted */
+  c4:	83 b9       	out	0x03, r24	; 3
+	TWCR = (1<<TWEN)|(1<<TWINT)|(1<<TWEA);		/* Enable TWI and clear interrupt flag */
+  c6:	84 ec       	ldi	r24, 0xC4	; 196
+  c8:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1<<TWINT)));				/* Wait until TWI finish its current job (Write operation) */
+  ca:	06 b6       	in	r0, 0x36	; 54
+  cc:	07 fe       	sbrs	r0, 7
+  ce:	fd cf       	rjmp	.-6      	; 0xca <I2C_Slave_Transmit+0x6>
+	status = TWSR & 0xF8;						/* Read TWI status register with masking lower three bits */
+  d0:	81 b1       	in	r24, 0x01	; 1
+  d2:	88 7f       	andi	r24, 0xF8	; 248
+	if (status == 0xA0)							/* Check weather STOP/REPEATED START received */
+  d4:	80 3a       	cpi	r24, 0xA0	; 160
+  d6:	29 f4       	brne	.+10     	; 0xe2 <I2C_Slave_Transmit+0x1e>
+	{
+		TWCR |= (1<<TWINT);						/* If yes then clear interrupt flag & return -1 */
+  d8:	86 b7       	in	r24, 0x36	; 54
+  da:	80 68       	ori	r24, 0x80	; 128
+  dc:	86 bf       	out	0x36, r24	; 54
+		return -1;
+  de:	8f ef       	ldi	r24, 0xFF	; 255
+  e0:	08 95       	ret
+	}
+	if (status == 0xB8)							/* Check weather data transmitted & ack received */
+  e2:	88 3b       	cpi	r24, 0xB8	; 184
+  e4:	59 f0       	breq	.+22     	; 0xfc <I2C_Slave_Transmit+0x38>
+		return 0;									/* If yes then return 0 */
+	if (status == 0xC0)							/* Check weather data transmitted & nack received */
+  e6:	80 3c       	cpi	r24, 0xC0	; 192
+  e8:	29 f4       	brne	.+10     	; 0xf4 <I2C_Slave_Transmit+0x30>
+	{
+		TWCR |= (1<<TWINT);						/* If yes then clear interrupt flag & return -2 */
+  ea:	86 b7       	in	r24, 0x36	; 54
+  ec:	80 68       	ori	r24, 0x80	; 128
+  ee:	86 bf       	out	0x36, r24	; 54
+		return -2;
+  f0:	8e ef       	ldi	r24, 0xFE	; 254
+  f2:	08 95       	ret
+	}
+	if (status == 0xC8)							/* If last data byte transmitted with ack received TWEA = 0 */
+  f4:	88 3c       	cpi	r24, 0xC8	; 200
+  f6:	21 f4       	brne	.+8      	; 0x100 <I2C_Slave_Transmit+0x3c>
+	return -3;									/* If yes then return -3 */
+  f8:	8d ef       	ldi	r24, 0xFD	; 253
+  fa:	08 95       	ret
+	{
+		TWCR |= (1<<TWINT);						/* If yes then clear interrupt flag & return -1 */
+		return -1;
+	}
+	if (status == 0xB8)							/* Check weather data transmitted & ack received */
+		return 0;									/* If yes then return 0 */
+  fc:	80 e0       	ldi	r24, 0x00	; 0
+  fe:	08 95       	ret
+		return -2;
+	}
+	if (status == 0xC8)							/* If last data byte transmitted with ack received TWEA = 0 */
+	return -3;									/* If yes then return -3 */
+	else										/* else return -4 */
+	return -4;
+ 100:	8c ef       	ldi	r24, 0xFC	; 252
+}
+ 102:	08 95       	ret
+
+00000104 <I2C_Slave_Receive>:
+
+char I2C_Slave_Receive()
+{
+	uint8_t status;								/* Declare variable */
+	TWCR=(1<<TWEN)|(1<<TWEA)|(1<<TWINT);		/* Enable TWI, generation of ack and clear interrupt flag */
+ 104:	84 ec       	ldi	r24, 0xC4	; 196
+ 106:	86 bf       	out	0x36, r24	; 54
+	while (!(TWCR & (1<<TWINT)));				/* Wait until TWI finish its current job (read operation) */
+ 108:	06 b6       	in	r0, 0x36	; 54
+ 10a:	07 fe       	sbrs	r0, 7
+ 10c:	fd cf       	rjmp	.-6      	; 0x108 <I2C_Slave_Receive+0x4>
+	status = TWSR & 0xF8;						/* Read TWI status register with masking lower three bits */
+ 10e:	81 b1       	in	r24, 0x01	; 1
+ 110:	88 7f       	andi	r24, 0xF8	; 248
+	if (status == 0x80 || status == 0x90)		/* Check weather data received & ack returned (TWEA = 1) */
+ 112:	80 38       	cpi	r24, 0x80	; 128
+ 114:	11 f0       	breq	.+4      	; 0x11a <I2C_Slave_Receive+0x16>
+ 116:	80 39       	cpi	r24, 0x90	; 144
+ 118:	11 f4       	brne	.+4      	; 0x11e <I2C_Slave_Receive+0x1a>
+	return TWDR;								/* If yes then return received data */
+ 11a:	83 b1       	in	r24, 0x03	; 3
+ 11c:	08 95       	ret
+	if (status == 0x88 || status == 0x98)		/* Check weather data received, nack returned and switched to not addressed slave mode */
+ 11e:	88 38       	cpi	r24, 0x88	; 136
+ 120:	11 f0       	breq	.+4      	; 0x126 <I2C_Slave_Receive+0x22>
+ 122:	88 39       	cpi	r24, 0x98	; 152
+ 124:	11 f4       	brne	.+4      	; 0x12a <I2C_Slave_Receive+0x26>
+	return TWDR;								/* If yes then return received data */
+ 126:	83 b1       	in	r24, 0x03	; 3
+ 128:	08 95       	ret
+	if (status == 0xA0)							/* Check weather STOP/REPEATED START received */
+ 12a:	80 3a       	cpi	r24, 0xA0	; 160
+ 12c:	29 f4       	brne	.+10     	; 0x138 <I2C_Slave_Receive+0x34>
+	{
+		TWCR |= (1<<TWINT);						/* If yes then clear interrupt flag & return 0 */
+ 12e:	86 b7       	in	r24, 0x36	; 54
+ 130:	80 68       	ori	r24, 0x80	; 128
+ 132:	86 bf       	out	0x36, r24	; 54
+		return -1;
+ 134:	8f ef       	ldi	r24, 0xFF	; 255
+ 136:	08 95       	ret
+	}
+	else
+	return -2;									/* Else return 1 */
+ 138:	8e ef       	ldi	r24, 0xFE	; 254
+}
+ 13a:	08 95       	ret
+
+0000013c <main>:
+#include "I2C_Slave_H_File.h"					/* Include I2C slave header file */
+#include "stdlib.h"
+#define Slave_Address			0x20
+
+int main(void)
+{
+ 13c:	cf 93       	push	r28
+ 13e:	df 93       	push	r29
+ 140:	cd b7       	in	r28, 0x3d	; 61
+ 142:	de b7       	in	r29, 0x3e	; 62
+ 144:	2a 97       	sbiw	r28, 0x0a	; 10
+ 146:	0f b6       	in	r0, 0x3f	; 63
+ 148:	f8 94       	cli
+ 14a:	de bf       	out	0x3e, r29	; 62
+ 14c:	0f be       	out	0x3f, r0	; 63
+ 14e:	cd bf       	out	0x3d, r28	; 61
+	char buffer[10];
+	int8_t count = 0;
+	
+	usart_Init();
+ 150:	0e 94 eb 00 	call	0x1d6	; 0x1d6 <usart_Init>
+	I2C_Slave_Init(Slave_Address);
+ 154:	80 e2       	ldi	r24, 0x20	; 32
+ 156:	0e 94 41 00 	call	0x82	; 0x82 <I2C_Slave_Init>
+	
+	usart_sendStringNewLine( "Slave Device");
+ 15a:	80 e6       	ldi	r24, 0x60	; 96
+ 15c:	90 e0       	ldi	r25, 0x00	; 0
+ 15e:	0e 94 09 01 	call	0x212	; 0x212 <usart_sendStringNewLine>
+#define Slave_Address			0x20
+
+int main(void)
+{
+	char buffer[10];
+	int8_t count = 0;
+ 162:	10 e0       	ldi	r17, 0x00	; 0
+	
+	usart_sendStringNewLine( "Slave Device");
+	
+	while (1)
+	{
+		switch(I2C_Slave_Listen())				/* Check for any SLA+W or SLA+R */
+ 164:	0e 94 45 00 	call	0x8a	; 0x8a <I2C_Slave_Listen>
+ 168:	88 23       	and	r24, r24
+ 16a:	19 f0       	breq	.+6      	; 0x172 <main+0x36>
+ 16c:	81 30       	cpi	r24, 0x01	; 1
+ 16e:	c9 f0       	breq	.+50     	; 0x1a2 <main+0x66>
+ 170:	f9 cf       	rjmp	.-14     	; 0x164 <main+0x28>
+		{
+			case 0:
+			{
+				usart_sendStringNewLine( "Receiving :       ");
+ 172:	8d e6       	ldi	r24, 0x6D	; 109
+ 174:	90 e0       	ldi	r25, 0x00	; 0
+ 176:	0e 94 09 01 	call	0x212	; 0x212 <usart_sendStringNewLine>
+    } else if (__radix < 2 || __radix > 36) {
+	*__s = 0;
+	return __s;
+    } else {
+	extern char *__itoa_ncheck (int, char *, unsigned char);
+	return __itoa_ncheck (__val, __s, __radix);
+ 17a:	4a e0       	ldi	r20, 0x0A	; 10
+ 17c:	be 01       	movw	r22, r28
+ 17e:	6f 5f       	subi	r22, 0xFF	; 255
+ 180:	7f 4f       	sbci	r23, 0xFF	; 255
+ 182:	81 2f       	mov	r24, r17
+ 184:	11 0f       	add	r17, r17
+ 186:	99 0b       	sbc	r25, r25
+ 188:	0e 94 35 01 	call	0x26a	; 0x26a <__itoa_ncheck>
+				do
+				{
+					itoa( count,buffer,10);
+					usart_sendStringNewLine( buffer);
+ 18c:	ce 01       	movw	r24, r28
+ 18e:	01 96       	adiw	r24, 0x01	; 1
+ 190:	0e 94 09 01 	call	0x212	; 0x212 <usart_sendStringNewLine>
+					count = I2C_Slave_Receive();/* Receive data byte*/
+ 194:	0e 94 82 00 	call	0x104	; 0x104 <I2C_Slave_Receive>
+ 198:	18 2f       	mov	r17, r24
+				} while (count != -1);			/* Receive until STOP/REPEATED START received */
+ 19a:	8f 3f       	cpi	r24, 0xFF	; 255
+ 19c:	71 f7       	brne	.-36     	; 0x17a <main+0x3e>
+				count = 0;
+ 19e:	10 e0       	ldi	r17, 0x00	; 0
+ 1a0:	e1 cf       	rjmp	.-62     	; 0x164 <main+0x28>
+				break;
+			}
+			case 1:
+			{
+				int8_t Ack_status;
+				usart_sendStringNewLine( "Sending :       ");
+ 1a2:	80 e8       	ldi	r24, 0x80	; 128
+ 1a4:	90 e0       	ldi	r25, 0x00	; 0
+ 1a6:	0e 94 09 01 	call	0x212	; 0x212 <usart_sendStringNewLine>
+				do
+				{
+					Ack_status = I2C_Slave_Transmit(count);	/* Send data byte */
+ 1aa:	81 2f       	mov	r24, r17
+ 1ac:	0e 94 62 00 	call	0xc4	; 0xc4 <I2C_Slave_Transmit>
+ 1b0:	08 2f       	mov	r16, r24
+ 1b2:	4a e0       	ldi	r20, 0x0A	; 10
+ 1b4:	be 01       	movw	r22, r28
+ 1b6:	6f 5f       	subi	r22, 0xFF	; 255
+ 1b8:	7f 4f       	sbci	r23, 0xFF	; 255
+ 1ba:	81 2f       	mov	r24, r17
+ 1bc:	01 2e       	mov	r0, r17
+ 1be:	00 0c       	add	r0, r0
+ 1c0:	99 0b       	sbc	r25, r25
+ 1c2:	0e 94 35 01 	call	0x26a	; 0x26a <__itoa_ncheck>
+					itoa( count,buffer,10);
+					usart_sendStringNewLine(buffer);
+ 1c6:	ce 01       	movw	r24, r28
+ 1c8:	01 96       	adiw	r24, 0x01	; 1
+ 1ca:	0e 94 09 01 	call	0x212	; 0x212 <usart_sendStringNewLine>
+					count++;
+ 1ce:	1f 5f       	subi	r17, 0xFF	; 255
+				} while (Ack_status == 0);		/* Send until Acknowledgment is received */
+ 1d0:	00 23       	and	r16, r16
+ 1d2:	59 f3       	breq	.-42     	; 0x1aa <main+0x6e>
+ 1d4:	c7 cf       	rjmp	.-114    	; 0x164 <main+0x28>
+
+000001d6 <usart_Init>:
+char usart_receiveChar(){
+	while( ! (UCSRA & (1 << RXC))){
+		// Passiert nix
+	}// Wartet bis alle bits vollständig empfangen sind
+	return UDR;
+}
+ 1d6:	10 bc       	out	0x20, r1	; 32
+ 1d8:	83 e3       	ldi	r24, 0x33	; 51
+ 1da:	89 b9       	out	0x09, r24	; 9
+ 1dc:	8a b1       	in	r24, 0x0a	; 10
+ 1de:	88 61       	ori	r24, 0x18	; 24
+ 1e0:	8a b9       	out	0x0a, r24	; 10
+ 1e2:	8a b1       	in	r24, 0x0a	; 10
+ 1e4:	80 68       	ori	r24, 0x80	; 128
+ 1e6:	8a b9       	out	0x0a, r24	; 10
+ 1e8:	80 b5       	in	r24, 0x20	; 32
+ 1ea:	86 68       	ori	r24, 0x86	; 134
+ 1ec:	80 bd       	out	0x20, r24	; 32
+ 1ee:	08 95       	ret
+
+000001f0 <usart_sendChar>:
+ 1f0:	5d 9b       	sbis	0x0b, 5	; 11
+ 1f2:	fe cf       	rjmp	.-4      	; 0x1f0 <usart_sendChar>
+ 1f4:	8c b9       	out	0x0c, r24	; 12
+ 1f6:	08 95       	ret
+
+000001f8 <usart_sendString>:
+ 1f8:	cf 93       	push	r28
+ 1fa:	df 93       	push	r29
+ 1fc:	ec 01       	movw	r28, r24
+ 1fe:	03 c0       	rjmp	.+6      	; 0x206 <usart_sendString+0xe>
+ 200:	21 96       	adiw	r28, 0x01	; 1
+ 202:	0e 94 f8 00 	call	0x1f0	; 0x1f0 <usart_sendChar>
+ 206:	88 81       	ld	r24, Y
+ 208:	81 11       	cpse	r24, r1
+ 20a:	fa cf       	rjmp	.-12     	; 0x200 <usart_sendString+0x8>
+ 20c:	df 91       	pop	r29
+ 20e:	cf 91       	pop	r28
+ 210:	08 95       	ret
+
+00000212 <usart_sendStringNewLine>:
+ 212:	0e 94 fc 00 	call	0x1f8	; 0x1f8 <usart_sendString>
+ 216:	81 e9       	ldi	r24, 0x91	; 145
+ 218:	90 e0       	ldi	r25, 0x00	; 0
+ 21a:	0e 94 fc 00 	call	0x1f8	; 0x1f8 <usart_sendString>
+ 21e:	08 95       	ret
+
+00000220 <__vector_13>:
+
+ISR(USART_RXC_vect) {
+ 220:	1f 92       	push	r1
+ 222:	0f 92       	push	r0
+ 224:	0f b6       	in	r0, 0x3f	; 63
+ 226:	0f 92       	push	r0
+ 228:	11 24       	eor	r1, r1
+ 22a:	2f 93       	push	r18
+ 22c:	3f 93       	push	r19
+ 22e:	4f 93       	push	r20
+ 230:	5f 93       	push	r21
+ 232:	6f 93       	push	r22
+ 234:	7f 93       	push	r23
+ 236:	8f 93       	push	r24
+ 238:	9f 93       	push	r25
+ 23a:	af 93       	push	r26
+ 23c:	bf 93       	push	r27
+ 23e:	ef 93       	push	r30
+ 240:	ff 93       	push	r31
+	
+	usart_sendChar(UDR);
+ 242:	8c b1       	in	r24, 0x0c	; 12
+ 244:	0e 94 f8 00 	call	0x1f0	; 0x1f0 <usart_sendChar>
+}
+ 248:	ff 91       	pop	r31
+ 24a:	ef 91       	pop	r30
+ 24c:	bf 91       	pop	r27
+ 24e:	af 91       	pop	r26
+ 250:	9f 91       	pop	r25
+ 252:	8f 91       	pop	r24
+ 254:	7f 91       	pop	r23
+ 256:	6f 91       	pop	r22
+ 258:	5f 91       	pop	r21
+ 25a:	4f 91       	pop	r20
+ 25c:	3f 91       	pop	r19
+ 25e:	2f 91       	pop	r18
+ 260:	0f 90       	pop	r0
+ 262:	0f be       	out	0x3f, r0	; 63
+ 264:	0f 90       	pop	r0
+ 266:	1f 90       	pop	r1
+ 268:	18 95       	reti
+
+0000026a <__itoa_ncheck>:
+ 26a:	bb 27       	eor	r27, r27
+ 26c:	4a 30       	cpi	r20, 0x0A	; 10
+ 26e:	31 f4       	brne	.+12     	; 0x27c <__itoa_ncheck+0x12>
+ 270:	99 23       	and	r25, r25
+ 272:	22 f4       	brpl	.+8      	; 0x27c <__itoa_ncheck+0x12>
+ 274:	bd e2       	ldi	r27, 0x2D	; 45
+ 276:	90 95       	com	r25
+ 278:	81 95       	neg	r24
+ 27a:	9f 4f       	sbci	r25, 0xFF	; 255
+ 27c:	0c 94 41 01 	jmp	0x282	; 0x282 <__utoa_common>
+
+00000280 <__utoa_ncheck>:
+ 280:	bb 27       	eor	r27, r27
+
+00000282 <__utoa_common>:
+ 282:	fb 01       	movw	r30, r22
+ 284:	55 27       	eor	r21, r21
+ 286:	aa 27       	eor	r26, r26
+ 288:	88 0f       	add	r24, r24
+ 28a:	99 1f       	adc	r25, r25
+ 28c:	aa 1f       	adc	r26, r26
+ 28e:	a4 17       	cp	r26, r20
+ 290:	10 f0       	brcs	.+4      	; 0x296 <__utoa_common+0x14>
+ 292:	a4 1b       	sub	r26, r20
+ 294:	83 95       	inc	r24
+ 296:	50 51       	subi	r21, 0x10	; 16
+ 298:	b9 f7       	brne	.-18     	; 0x288 <__utoa_common+0x6>
+ 29a:	a0 5d       	subi	r26, 0xD0	; 208
+ 29c:	aa 33       	cpi	r26, 0x3A	; 58
+ 29e:	08 f0       	brcs	.+2      	; 0x2a2 <__utoa_common+0x20>
+ 2a0:	a9 5d       	subi	r26, 0xD9	; 217
+ 2a2:	a1 93       	st	Z+, r26
+ 2a4:	00 97       	sbiw	r24, 0x00	; 0
+ 2a6:	79 f7       	brne	.-34     	; 0x286 <__utoa_common+0x4>
+ 2a8:	b1 11       	cpse	r27, r1
+ 2aa:	b1 93       	st	Z+, r27
+ 2ac:	11 92       	st	Z+, r1
+ 2ae:	cb 01       	movw	r24, r22
+ 2b0:	0c 94 5a 01 	jmp	0x2b4	; 0x2b4 <strrev>
+
+000002b4 <strrev>:
+ 2b4:	dc 01       	movw	r26, r24
+ 2b6:	fc 01       	movw	r30, r24
+ 2b8:	67 2f       	mov	r22, r23
+ 2ba:	71 91       	ld	r23, Z+
+ 2bc:	77 23       	and	r23, r23
+ 2be:	e1 f7       	brne	.-8      	; 0x2b8 <strrev+0x4>
+ 2c0:	32 97       	sbiw	r30, 0x02	; 2
+ 2c2:	04 c0       	rjmp	.+8      	; 0x2cc <strrev+0x18>
+ 2c4:	7c 91       	ld	r23, X
+ 2c6:	6d 93       	st	X+, r22
+ 2c8:	70 83       	st	Z, r23
+ 2ca:	62 91       	ld	r22, -Z
+ 2cc:	ae 17       	cp	r26, r30
+ 2ce:	bf 07       	cpc	r27, r31
+ 2d0:	c8 f3       	brcs	.-14     	; 0x2c4 <strrev+0x10>
+ 2d2:	08 95       	ret
+
+000002d4 <_exit>:
+ 2d4:	f8 94       	cli
+
+000002d6 <__stop_program>:
+ 2d6:	ff cf       	rjmp	.-2      	; 0x2d6 <__stop_program>
